@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Anglio KELIAN — Portfolio BTS SIO SLAM</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --green: #00ff88;
+    --green-dim: #00cc66;
+    --green-glow: rgba(0,255,136,0.15);
+    --green-faint: rgba(0,255,136,0.05);
+    --bg: #050a07;
+    --bg2: #080f0a;
+    --bg3: #0b1610;
+    --border: rgba(0,255,136,0.18);
+    --text: #c8e8d0;
+    --text-dim: #5a7a62;
+    --mono: 'Share Tech Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px);
+    pointer-events: none;
+    z-index: 9999;
+  }
+  #matrix-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    opacity: 0.06;
+    pointer-events: none;
+  }
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 3rem;
+    height: 60px;
+    background: rgba(5,10,7,0.92);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+  }
+  .nav-logo {
+    font-family: var(--mono);
+    color: var(--green);
+    font-size: 1rem;
+    letter-spacing: 2px;
+  }
+  .nav-logo span { color: var(--text-dim); }
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    text-decoration: none;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--green); }
+  section { position: relative; z-index: 1; }
+
+  /* HERO */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 6rem 3rem 4rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .hero-tag {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--green);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .hero-tag::before {
+    content: '';
+    display: inline-block;
+    width: 30px;
+    height: 1px;
+    background: var(--green);
+  }
+  .hero-name {
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    font-weight: 800;
+    line-height: 0.9;
+    letter-spacing: -2px;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+  .hero-name .accent { color: var(--green); }
+  .hero-title {
+    font-family: var(--mono);
+    font-size: 1rem;
+    color: var(--green-dim);
+    margin: 1.5rem 0 2rem;
+    letter-spacing: 1px;
+  }
+  .hero-title .cursor {
+    display: inline-block;
+    width: 10px; height: 1.1em;
+    background: var(--green);
+    vertical-align: middle;
+    margin-left: 4px;
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  .hero-desc {
+    max-width: 600px;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text);
+    margin-bottom: 3rem;
+    border-left: 2px solid var(--green);
+    padding-left: 1.25rem;
+  }
+  .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .btn {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0.85rem 2rem;
+    border: 1px solid var(--green);
+    background: transparent;
+    color: var(--green);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--green);
+    transform: translateX(-100%);
+    transition: transform 0.2s;
+    z-index: -1;
+  }
+  .btn:hover { color: var(--bg); }
+  .btn:hover::before { transform: translateX(0); }
+  .btn-ghost { border-color: var(--border); color: var(--text-dim); }
+  .btn-ghost:hover { color: var(--bg); border-color: var(--green); }
+  .hero-stats {
+    display: flex;
+    gap: 3rem;
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .stat { display: flex; flex-direction: column; }
+  .stat-num {
+    font-family: var(--mono);
+    font-size: 2rem;
+    color: var(--green);
+    font-weight: 700;
+  }
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 0.25rem;
+  }
+
+  /* SECTION HEADER */
+  .section-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 6rem 3rem;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 3.5rem;
+  }
+  .section-num {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--green);
+    letter-spacing: 2px;
+  }
+  .section-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -1px;
+  }
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ABOUT */
+  #about { background: var(--bg2); }
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+  .about-text p {
+    font-size: 1rem;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 1.25rem;
+  }
+  .about-text strong { color: var(--green); font-weight: 600; }
+  .about-cards { display: flex; flex-direction: column; gap: 1rem; }
+  .about-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 1.25rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .about-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--green);
+  }
+  .about-card:hover { border-color: var(--green); }
+  .about-card-title {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--green);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .about-card p { font-size: 0.9rem; color: var(--text); line-height: 1.6; }
+
+  /* TAGS */
+  .project-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .tag {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    padding: 0.25rem 0.6rem;
+    border: 1px solid var(--border);
+    color: var(--green-dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* VEILLE */
+  #veille { background: var(--bg2); }
+  .veille-full { display: flex; flex-direction: column; gap: 2rem; }
+  .veille-top { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .veille-main {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 2rem;
+  }
+  .veille-main-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+  .veille-main p {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    line-height: 1.8;
+    margin-bottom: 1rem;
+  }
+  .veille-sidebar { display: flex; flex-direction: column; gap: 1rem; }
+  .veille-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 1.25rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .veille-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--green);
+  }
+  .veille-card-title {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--green);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  .veille-card ul { list-style: none; }
+  .veille-card ul li {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    padding: 0.2rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .veille-card ul li::before { content: '›'; color: var(--green); }
+  .veille-actu-section { margin-top: 0; }
+  .veille-actu-title {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--green);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .veille-actu-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .actu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+  .actu-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .actu-card:hover { border-color: var(--green); transform: translateY(-3px); }
+  .actu-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--green);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+  .actu-card:hover::after { transform: scaleX(1); }
+  .actu-date {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    color: var(--green);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  .actu-source {
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+  }
+  .actu-headline {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.4;
+    margin-bottom: 0.75rem;
+  }
+  .actu-body {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+  .actu-analyse {
+    font-size: 0.75rem;
+    color: var(--text);
+    line-height: 1.6;
+    border-left: 2px solid var(--green);
+    padding-left: 0.75rem;
+    font-style: italic;
+  }
+  .actu-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.55rem;
+    padding: 0.15rem 0.5rem;
+    border: 1px solid var(--border);
+    color: var(--green-dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-right: 0.25rem;
+    margin-top: 0.75rem;
+  }
+
+  /* VEILLE BLOCS AVANTAGES/INCONVENIENTS */
+  .veille-two-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 0;
+  }
+  .veille-bloc {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 1.75rem;
+  }
+  .veille-bloc-title {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--green);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .veille-bloc ul { list-style: none; }
+  .veille-bloc ul li {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(0,255,136,0.05);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    line-height: 1.6;
+  }
+  .veille-bloc ul li:last-child { border-bottom: none; }
+  .veille-bloc ul li::before { content: '▸'; color: var(--green); flex-shrink: 0; margin-top: 2px; }
+  .veille-bloc ul li strong { color: var(--text); }
+
+  .veille-methodologie {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 1.75rem;
+    margin-top: 0;
+  }
+  .veille-methodo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    margin-top: 1.25rem;
+  }
+  .vm-col-title {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    color: var(--green);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .vm-col ul { list-style: none; }
+  .vm-col ul li {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    padding: 0.25rem 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    line-height: 1.5;
+  }
+  .vm-col ul li::before { content: '▸'; color: var(--green); flex-shrink: 0; }
+  .veille-bilan {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--green);
+    padding: 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+  .veille-bilan-text {
+    font-size: 0.88rem;
+    color: var(--text);
+    line-height: 1.8;
+  }
+  .veille-bilan-text strong { color: var(--green); }
+  .veille-bilan-liens { display: flex; flex-direction: column; gap: 0.5rem; }
+  .veille-lien {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    text-decoration: none;
+    transition: color 0.2s;
+    line-height: 1.5;
+  }
+  .veille-lien::before { content: '→'; color: var(--green); flex-shrink: 0; }
+  .veille-lien:hover { color: var(--green); }
+
+  /* DEFINITION SECTION */
+  .definition-block {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--green);
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+  .definition-block h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1rem;
+  }
+  .definition-block p {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    line-height: 1.8;
+    margin-bottom: 0.75rem;
+  }
+  .definition-block p:last-child { margin-bottom: 0; }
+  .definition-block a {
+    color: var(--green-dim);
+    text-decoration: underline;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+  }
+  .definition-block a:hover { color: var(--green); }
+
+  /* STUDIES TABLE */
+  .etude-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    margin-top: 1rem;
+  }
+  .etude-table th {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--green);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: left;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .etude-table td {
+    padding: 0.75rem 1rem;
+    color: var(--text-dim);
+    border-bottom: 1px solid rgba(0,255,136,0.05);
+    line-height: 1.6;
+    vertical-align: top;
+  }
+  .etude-table td strong { color: var(--text); }
+  .etude-table tr:last-child td { border-bottom: none; }
+  .etude-table tr:hover td { color: var(--text); }
+  .etude-table a {
+    color: var(--green-dim);
+    text-decoration: underline;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+  }
+  .etude-table a:hover { color: var(--green); }
+  .etude-num {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--green);
+    white-space: nowrap;
+  }
+
+  /* E5 SECTION */
+  #e5 { background: var(--bg); }
+  .e5-intro {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--green);
+    padding: 1.75rem 2rem;
+    margin-bottom: 2rem;
+  }
+  .e5-intro h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.75rem;
+  }
+  .e5-intro p {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    line-height: 1.8;
+    margin-bottom: 0.5rem;
+  }
+  .e5-intro p:last-child { margin-bottom: 0; }
+  .e5-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .e5-bloc {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 1.75rem;
+  }
+  .e5-bloc-title {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--green);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .e5-bloc p {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.8;
+    margin-bottom: 0.75rem;
+  }
+  .e5-bloc p:last-child { margin-bottom: 0; }
+  .e5-bloc ul { list-style: none; margin-top: 0.5rem; }
+  .e5-bloc ul li {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    padding: 0.35rem 0;
+    border-bottom: 1px solid rgba(0,255,136,0.05);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    line-height: 1.6;
+  }
+  .e5-bloc ul li:last-child { border-bottom: none; }
+  .e5-bloc ul li::before { content: '▸'; color: var(--green); flex-shrink: 0; margin-top: 2px; }
+  .e5-bloc strong { color: var(--text); }
+  .e5-full {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .e5-full-title {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--green);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .e5-full p {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.8;
+    margin-bottom: 0.75rem;
+  }
+  .e5-full p:last-child { margin-bottom: 0; }
+  .e5-full ul { list-style: none; margin-bottom: 0.75rem; }
+  .e5-full ul li {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    padding: 0.3rem 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    line-height: 1.6;
+  }
+  .e5-full ul li::before { content: '›'; color: var(--green); flex-shrink: 0; }
+  .e5-full strong { color: var(--text); }
+  .e5-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    margin: 1rem 0;
+  }
+  .e5-table th {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    color: var(--green);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: left;
+    padding: 0.6rem 0.85rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(0,255,136,0.03);
+  }
+  .e5-table td {
+    padding: 0.6rem 0.85rem;
+    color: var(--text-dim);
+    border-bottom: 1px solid rgba(0,255,136,0.05);
+    line-height: 1.6;
+    vertical-align: top;
+  }
+  .e5-table td strong { color: var(--text); }
+  .e5-table tr:last-child td { border-bottom: none; }
+  .e5-q {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--green);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 1.25rem 0 0.5rem 0;
+  }
+
+  /* CONTACT */
+  #contact {
+    background: var(--bg3);
+    border-top: 1px solid var(--border);
+  }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+  .contact-text h3 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+  .contact-text h3 span { color: var(--green); }
+  .contact-text p { font-size: 0.9rem; color: var(--text-dim); line-height: 1.8; margin-bottom: 2rem; }
+  .contact-links { display: flex; flex-direction: column; gap: 1rem; }
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .contact-link:hover { border-color: var(--green); transform: translateX(6px); }
+  .contact-link-icon {
+    font-family: var(--mono);
+    font-size: 1rem;
+    color: var(--green);
+    width: 30px;
+    text-align: center;
+  }
+  .contact-link-info { display: flex; flex-direction: column; }
+  .contact-link-label {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .contact-link-value { font-size: 0.9rem; color: var(--text); margin-top: 0.1rem; }
+  .cv-download {
+    background: var(--bg2);
+    border: 1px solid var(--green);
+    padding: 2rem;
+    text-align: center;
+  }
+  .cv-download p {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+  }
+  .cv-preview {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    display: block;
+  }
+  .cv-download .btn { width: 100%; display: block; text-align: center; }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    border-top: 1px solid var(--border);
+    position: relative;
+    z-index: 1;
+  }
+  footer span { color: var(--green); }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    nav { padding: 0 1.5rem; }
+    .nav-links { display: none; }
+    .section-wrap { padding: 4rem 1.5rem; }
+    #hero { padding: 5rem 1.5rem 3rem; }
+    .about-grid, .veille-top, .contact-grid, .veille-two-cols, .veille-bilan, .e5-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .actu-grid { grid-template-columns: 1fr; }
+    .veille-methodo-grid { grid-template-columns: 1fr; }
+    .hero-stats { gap: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="matrix-canvas"></canvas>
+
+<nav>
+  <div class="nav-logo">AK<span>://</span>portfolio</div>
+  <ul class="nav-links">
+    <li><a href="#about">À propos</a></li>
+    <li><a href="#veille">Veille</a></li>
+    <li><a href="#studies">Études</a></li>
+    <li><a href="#e5">Partie E5</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero-section">
+  <div id="hero">
+    <div class="hero-tag">BTS SIO SLAM · Lycée Nelson Mandela · Saint-Benoît · 2024–2026</div>
+    <h1 class="hero-name">ANGLIO<br><span class="accent">KELIAN</span></h1>
+    <p class="hero-title">
+      <span id="typed-text"></span><span class="cursor"></span>
+    </p>
+    <p class="hero-desc">
+      Étudiant en deuxième année de <strong>BTS SIO option SLAM</strong> au lycée Nelson Mandela à Saint-Benoît. Mon option est orientée vers le <strong>développement d'applications et la programmation</strong>. Je vous invite à découvrir mes veilles technologiques et projets professionnels réalisés durant mon parcours.
+    </p>
+    <div class="hero-ctas">
+      <a href="#veille" class="btn">Voir ma veille</a>
+      <a href="#contact" class="btn btn-ghost">Me contacter</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-num">2</span>
+        <span class="stat-label">Ans de formation</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">SLAM</span>
+        <span class="stat-label">Option BTS SIO</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">IA</span>
+        <span class="stat-label">Sujet de veille</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">2026</span>
+        <span class="stat-label">Diplôme en cours</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- À PROPOS -->
+<section id="about">
+  <div class="section-wrap">
+    <div class="section-header">
+      <span class="section-num">01 //</span>
+      <h2 class="section-title">À propos</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>
+          Je m'appelle <strong>Anglio Kelian</strong>, étudiant en deuxième année de BTS SIO option SLAM au lycée Nelson Mandela à Saint-Benoît. Mon option est orientée vers le <strong>développement d'applications et la programmation</strong>.
+        </p>
+        <p>
+          Toujours en formation, je vous invite à découvrir à travers ce portfolio les différentes études réalisées autour de plusieurs thématiques, ainsi que les <strong>projets professionnels</strong> que j'ai menés durant mon parcours en BTS SIO.
+        </p>
+        <p>
+          Mon sujet de veille technologique porte sur l'<strong>Intelligence Artificielle dans le développement logiciel</strong> — une thématique directement liée à mon quotidien de développeur en formation et aux enjeux actuels de notre profession.
+        </p>
+      </div>
+      <div class="about-cards">
+        <div class="about-card">
+          <div class="about-card-title">🎯 Option choisie</div>
+          <p>SLAM — Solutions Logicielles et Applications Métiers. Développement d'applications, programmation et gestion de bases de données.</p>
+        </div>
+        <div class="about-card">
+          <div class="about-card-title">🏫 Établissement</div>
+          <p>BTS SIO SLAM — Lycée Nelson Mandela<br/>Saint-Benoît (2024–2026)</p>
+        </div>
+        <div class="about-card">
+          <div class="about-card-title">💻 Sujet de veille</div>
+          <p>Intelligence Artificielle dans le développement logiciel — avantages, risques et impact sur les développeurs.</p>
+        </div>
+        <div class="about-card">
+          <div class="about-card-title">📍 Localisation</div>
+          <p>Saint-Benoît · La Réunion</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VEILLE TECHNOLOGIQUE -->
+<section id="veille">
+  <div style="background: var(--bg2); margin: 0; max-width: 100%;">
+    <div style="max-width: 1100px; margin: 0 auto; padding: 6rem 3rem;">
+      <div class="section-header">
+        <span class="section-num">02 //</span>
+        <h2 class="section-title">Veille technologique</h2>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="veille-full">
+
+        <!-- BLOC 1 : SUJET + SIDEBAR -->
+        <div class="veille-top">
+          <div class="veille-main">
+            <div style="font-family: var(--mono); font-size: 0.7rem; color: var(--green); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0.75rem;">Sujet de veille — BTS SIO SLAM</div>
+            <div class="veille-main-title">🤖 L'IA dans le développement logiciel</div>
+            <p>
+              L'intelligence artificielle (IA) transforme profondément le développement logiciel en proposant des outils automatisés pour générer du code, détecter des erreurs ou assister les développeurs. Mais ses impacts ne sont pas uniformément bénéfiques : certaines études montrent à la fois des <strong style="color:var(--green)">gains significatifs et des limites importantes</strong> selon les contextes d'usage.
+            </p>
+            <p>
+              Ma veille porte sur l'adoption massive des assistants IA (GitHub Copilot, Claude, ChatGPT) dans le travail des développeurs, les gains de productivité observés, mais aussi les risques liés à la <strong style="color:var(--green)">sécurité du code généré, la dépendance technologique et la fatigue cognitive</strong>. Un sujet directement lié à ma formation SLAM et à mon quotidien de développeur.
+            </p>
+            <p>
+              Ce sujet m'intéresse car il interroge directement notre futur métier : comment les développeurs SLAM de demain vont-ils collaborer avec l'IA ? Quelles compétences faut-il préserver ? Quelles nouvelles responsabilités apparaissent ?
+            </p>
+            <div class="project-tags" style="margin-top: 1rem;">
+              <span class="tag">GitHub Copilot</span>
+              <span class="tag">LLM</span>
+              <span class="tag">Productivité</span>
+              <span class="tag">Cybersécurité</span>
+              <span class="tag">Code Review</span>
+              <span class="tag">RGPD</span>
+              <span class="tag">Agile</span>
+            </div>
+          </div>
+
+          <div class="veille-sidebar">
+            <div class="veille-card">
+              <div class="veille-card-title">🔧 Méthode & outils de veille</div>
+              <ul>
+                <li>Flux RSS — GitHub Blog, Dev.to</li>
+                <li>Elysiate.com — rapports dev IA 2025</li>
+                <li>Reuters Tech & Business</li>
+                <li>arXiv — recherches scientifiques</li>
+                <li>MDPI — Software Engineering</li>
+                <li>ITPro.com — actualités IT</li>
+                <li>Business Insider Tech</li>
+                <li>Atlassian Blog & Reports</li>
+              </ul>
+            </div>
+            <div class="veille-card">
+              <div class="veille-card-title">📌 5 axes clés identifiés</div>
+              <ul>
+                <li>Gains de productivité (+35% en moyenne)</li>
+                <li>Sécurité du code généré par IA</li>
+                <li>Impact sur les devs expérimentés</li>
+                <li>Intégration dans les méthodes agiles</li>
+                <li>Fatigue cognitive et "verification debt"</li>
+              </ul>
+            </div>
+            <div class="veille-card">
+              <div class="veille-card-title">🔗 Lien avec ma formation SLAM</div>
+              <ul>
+                <li>Outils d'assistance au développement</li>
+                <li>Qualité et sécurité du code produit</li>
+                <li>Gestion de projet et méthodes agiles</li>
+                <li>RGPD et données dans les outils IA</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- DEFINITION -->
+        <div class="definition-block">
+          <h3>🧠 Définition & Introduction</h3>
+          <p>
+            L'intelligence artificielle est une notion forgée au milieu des années 1950, dans la foulée des réflexions du mathématicien Alan Turing. Le Parlement européen la définit comme tout outil utilisé par une machine capable de reproduire des comportements liés aux humains, tels que le raisonnement, la planification et la créativité.
+          </p>
+          <p>
+            Dans le domaine du développement logiciel, l'IA prend la forme d'assistants de code (Copilot, Cursor, Claude), de générateurs de tests automatiques, d'outils de détection de bugs et de revue de code. À l'heure actuelle, les GPT (Generative Pre-trained Transformers) soulèvent des interrogations sur l'utilisation des données et leurs algorithmes, et le RGPD impose que les données traitées soient exactes — or les IA génératives peuvent produire du contenu erroné.
+          </p>
+          <p>
+            Sources :
+            <a href="https://www.enseignementsup-recherche.gouv.fr/fr/intelligence-artificielle-de-quoi-parle-t-91190" target="_blank" rel="noopener">enseignementsup-recherche.gouv.fr</a>
+            · <a href="https://hacom-tech.com" target="_blank" rel="noopener">hacom-tech.com</a>
+          </p>
+        </div>
+
+        <!-- BLOC 2 : AVANTAGES / INCONVENIENTS -->
+        <div class="veille-two-cols">
+          <div class="veille-bloc">
+            <div class="veille-bloc-title">✅ Les avantages</div>
+            <ul>
+              <li>
+                <div>
+                  <strong>Adoption massive & gains de productivité</strong><br/>
+                  87% des développeurs utilisent régulièrement l'IA, avec une augmentation de productivité moyenne de <strong>+35%</strong> et une réduction des bugs grâce à l'analyse assistée.
+                  <div style="font-family:var(--mono);font-size:0.6rem;color:var(--green);margin-top:0.4rem;">
+                    Source : <a href="https://www.elysiate.com/blog/ai-in-software-development-survey-2025" target="_blank" rel="noopener" style="color:var(--green);font-size:0.6rem;">Elysiate.com · Oct. 2025</a>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <strong>Meilleure gestion de projets logiciels</strong><br/>
+                  L'IA améliore l'estimation des délais, la détection précoce des risques et l'aide à la prise de décision dans la planification de projets. Elle présente toutefois des difficultés d'intégration dans les méthodes agiles existantes.
+                  <div style="font-family:var(--mono);font-size:0.6rem;color:var(--green);margin-top:0.4rem;">
+                    Source : <a href="https://www.mdpi.com/2673-6470/4/3/28" target="_blank" rel="noopener" style="color:var(--green);font-size:0.6rem;">MDPI – "AI in Software Project Planning" · Juin 2024</a>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <strong>Gains de 10h/semaine pour les devs</strong><br/>
+                  Les développeurs gagnent plus de 10 heures par semaine grâce à l'IA sur les tâches répétitives — ce gain est toutefois parfois annulé par les problèmes organisationnels.
+                  <div style="font-family:var(--mono);font-size:0.6rem;color:var(--green);margin-top:0.4rem;">
+                    Source : <a href="https://www.atlassian.com/teams/software-development/state-of-developer-experience-2025" target="_blank" rel="noopener" style="color:var(--green);font-size:0.6rem;">Atlassian – Developer Experience Report · Juillet 2025</a>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <strong>Automatisation des tâches rébarbatives</strong><br/>
+                  GitHub Copilot réduit jusqu'à 30% le temps passé sur les tâches répétitives : génération de tests, documentation, débogage.
+                  <div style="font-family:var(--mono);font-size:0.6rem;color:var(--green);margin-top:0.4rem;">
+                    Source : <a href="https://www.mdpi.com/2673-6470/4/3/28" target="_blank" rel="noopener" style="color:var(--green);font-size:0.6rem;">MDPI · hacom-tech.com</a>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="veille-bloc">
+            <div class="veille-bloc-title">❌ Les inconvénients</div>
+            <ul>
+              <li>
+                <div>
+                  <strong>Ralentissement des devs expérimentés</strong><br/>
+                  Certains développeurs expérimentés ont été <strong>19% plus lents</strong> en utilisant l'IA sur des bases de code maîtrisées, à cause du temps de vérification des suggestions.
+                  <div style="font-family:var(--mono);font-size:0.6rem;color:var(--green);margin-top:0.4rem;">
+                    Source : <a href="https://www.reuters.com/business/ai-slows-down-some-experienced-software-developers-study-finds-2025-07-10/" target="_blank" rel="noopener" style="color:var(--green);font-size:0.6rem;">Reuters · Juillet 2025</a>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <strong>Risques de sécurité dans le code généré</strong><br/>
+                  45% du code généré par IA peut contenir des failles (cross-site scripting, injections). Les outils IA ne respectent pas toujours les bonnes pratiques de cybersécurité.
+                  <div style="font-family:var(--mono);font-size:0.6rem;color:var(--green);margin-top:0.4rem;">
+                    Source : <a href="https://arxiv.org/abs/2405.06371" target="_blank" rel="noopener" style="color:var(--green);font-size:0.6rem;">arXiv · Mai 2024</a>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <strong>La "dette de vérification"</strong><br/>
+                  Les développeurs qui ne vérifient pas systématiquement le code IA accumulent bugs cachés, failles non détectées et dette technique à long terme.
+                  <div style="font-family:var(--mono);font-size:0.6rem;color:var(--green);margin-top:0.4rem;">
+                    Source : <a href="https://www.itpro.com/software/development/software-developers-not-checking-ai-generated-code-verification-debt" target="_blank" rel="noopener" style="color:var(--green);font-size:0.6rem;">ITPro – "Verification debt" · Juin 2025</a>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <strong>Fatigue cognitive & surcharge mentale</strong><br/>
+                  L'IA intensifie la charge de travail : certains développeurs ressentent une fatigue accrue due à la supervision constante des suggestions générées.
+                  <div style="font-family:var(--mono);font-size:0.6rem;color:var(--green);margin-top:0.4rem;">
+                    Source : <a href="https://www.businessinsider.com/ai-fatigue-burnout-software-engineer-essay-siddhant-khare-2026-2" target="_blank" rel="noopener" style="color:var(--green);font-size:0.6rem;">Business Insider · Février 2026</a>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <strong>Problèmes d'intégration & fragmentation des outils</strong><br/>
+                  Le phénomène de "toolchain sprawl" — accumulation de différents outils d'IA — peut compliquer les processus, augmenter les coûts et fragmenter la collaboration entre équipes.
+                  <div style="font-family:var(--mono);font-size:0.6rem;color:var(--green);margin-top:0.4rem;">
+                    Source : <a href="https://www.atlassian.com/teams/software-development/state-of-developer-experience-2025" target="_blank" rel="noopener" style="color:var(--green);font-size:0.6rem;">Atlassian – Developer Experience Report · Juillet 2025</a>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- BLOC 3 : ACTUALITÉS RÉCENTES -->
+        <div class="veille-actu-section">
+          <div class="veille-actu-title">📰 Faits d'actualité récents — 2024 / 2025 / 2026</div>
+          <div class="actu-grid">
+
+            <div class="actu-card">
+              <div class="actu-date">Octobre 2025</div>
+              <div class="actu-source">Elysiate.com</div>
+              <div class="actu-headline">87% des développeurs utilisent l'IA régulièrement — productivité en hausse de 35%</div>
+              <div class="actu-body">
+                Un rapport majeur révèle que l'IA est désormais utilisée régulièrement par 87% des développeurs, avec une augmentation moyenne de productivité de 35% et une réduction mesurable des bugs grâce à l'analyse assistée par intelligence artificielle.
+              </div>
+              <div class="actu-analyse">
+                Mon analyse : Ces chiffres confirment que l'IA n'est plus optionnelle pour les développeurs de demain. En tant qu'étudiant SLAM, je dois maîtriser ces outils tout en développant mon esprit critique sur la qualité du code produit.
+              </div>
+              <span class="actu-tag">Productivité</span>
+              <span class="actu-tag">Adoption IA</span>
+              <div style="margin-top:0.75rem;">
+                <a href="https://www.elysiate.com/blog/ai-in-software-development-survey-2025" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.6rem;color:var(--green-dim);text-decoration:underline;">→ Voir la source</a>
+              </div>
+            </div>
+
+            <div class="actu-card">
+              <div class="actu-date">Juillet 2025</div>
+              <div class="actu-source">Reuters</div>
+              <div class="actu-headline">L'IA ralentit certains développeurs expérimentés de 19% — une étude surprenante</div>
+              <div class="actu-body">
+                Contrairement aux idées reçues, une étude relayée par Reuters montre que des développeurs seniors travaillant sur leurs bases de code maîtrisées ont été 19% plus lents en utilisant des outils IA. Le temps de vérification des suggestions dépasse parfois le gain initial.
+              </div>
+              <div class="actu-analyse">
+                Mon analyse : Ce paradoxe est crucial. L'IA n'est pas un avantage absolu — elle dépend du contexte, de l'expérience du développeur et de la nature de la tâche. Une leçon importante pour notre génération qui apprend avec l'IA dès le départ.
+              </div>
+              <span class="actu-tag">Expérience dev</span>
+              <span class="actu-tag">Paradoxe IA</span>
+              <div style="margin-top:0.75rem;">
+                <a href="https://www.reuters.com/business/ai-slows-down-some-experienced-software-developers-study-finds-2025-07-10/" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.6rem;color:var(--green-dim);text-decoration:underline;">→ Voir la source</a>
+              </div>
+            </div>
+
+            <div class="actu-card">
+              <div class="actu-date">Juin 2025</div>
+              <div class="actu-source">ITPro</div>
+              <div class="actu-headline">"Verification debt" — un nouveau risque pour les équipes qui font confiance aveuglément à l'IA</div>
+              <div class="actu-body">
+                ITPro introduit le concept de "dette de vérification" : les développeurs qui n'analysent pas systématiquement le code généré par IA accumulent bugs cachés et failles de sécurité non détectées, créant une dette technique à long terme difficile à résorber.
+              </div>
+              <div class="actu-analyse">
+                Mon analyse : Ce concept rejoint directement ma formation SLAM sur la qualité logicielle. Utiliser l'IA ne dispense pas de la revue de code rigoureuse — au contraire, cela renforce son importance.
+              </div>
+              <span class="actu-tag">Sécurité</span>
+              <span class="actu-tag">Code Quality</span>
+              <span class="actu-tag">Dette tech</span>
+              <div style="margin-top:0.75rem;">
+                <a href="https://www.itpro.com/software/development/software-developers-not-checking-ai-generated-code-verification-debt" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.6rem;color:var(--green-dim);text-decoration:underline;">→ Voir la source</a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- BLOC 4 : METHODOLOGIE -->
+        <div class="veille-methodologie">
+          <div style="font-family: var(--mono); font-size: 0.7rem; color: var(--green); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 0.5rem;">Méthodologie de veille</div>
+          <div style="font-size: 0.88rem; color: var(--text-dim); line-height: 1.7;">Comment j'organise ma veille sur l'IA dans le développement logiciel</div>
+          <div class="veille-methodo-grid">
+            <div class="vm-col">
+              <div class="vm-col-title">📡 Sources d'information</div>
+              <ul>
+                <li>Elysiate.com — rapports IA 2025</li>
+                <li>MDPI — articles scientifiques</li>
+                <li>arXiv — prépublications chercheurs</li>
+                <li>Reuters Tech — actualités fiables</li>
+                <li>ITPro & Business Insider</li>
+                <li>Atlassian Blog officiel</li>
+              </ul>
+            </div>
+            <div class="vm-col">
+              <div class="vm-col-title">🔍 Mots-clés suivis</div>
+              <ul>
+                <li>AI software development 2025</li>
+                <li>GitHub Copilot productivity study</li>
+                <li>AI code security vulnerabilities</li>
+                <li>Developer experience AI tools</li>
+                <li>Verification debt AI-generated code</li>
+                <li>IA développeur avantages risques</li>
+              </ul>
+            </div>
+            <div class="vm-col">
+              <div class="vm-col-title">🗓️ Fréquence & organisation</div>
+              <ul>
+                <li>Veille hebdomadaire sur RSS</li>
+                <li>Alertes Google configurées</li>
+                <li>Synthèse mensuelle rédigée</li>
+                <li>Classement par axes thématiques</li>
+                <li>Partage en classe des actualités clés</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- BLOC 5 : BILAN FINAL -->
+        <div class="veille-bilan">
+          <div class="veille-bilan-text">
+            <strong>Synthèse & conclusion</strong><br/><br/>
+            Dans l'ensemble, l'IA représente un <strong>avantage net pour le développement logiciel</strong> lorsqu'elle est utilisée de manière structurée et supervisée. Les gains de productivité, l'assistance à l'écriture de code et l'amélioration de certains processus techniques sont des atouts indéniables.<br/><br/>
+            Toutefois, ces bénéfices ne sont pas automatiques et doivent être complétés par une <strong>validation humaine rigoureuse</strong>, une formation continue pour éviter la perte de compétences techniques, et une stratégie d'intégration réfléchie.<br/><br/>
+            Si l'IA est utilisée comme un <strong>assistant plutôt qu'un substitut</strong> du développeur, elle est majoritairement un avantage. La clé réside dans l'équilibre entre automatisation, supervision humaine et adaptation organisationnelle.
+          </div>
+          <div class="veille-bilan-liens">
+            <div style="font-family:var(--mono);font-size:0.65rem;color:var(--green);letter-spacing:2px;text-transform:uppercase;margin-bottom:0.75rem;">Sources utilisées</div>
+            <a class="veille-lien" href="https://www.elysiate.com/blog/ai-in-software-development-survey-2025" target="_blank" rel="noopener">Elysiate.com — AI in Software Development Survey 2025</a>
+            <a class="veille-lien" href="https://www.mdpi.com/2673-6470/4/3/28" target="_blank" rel="noopener">MDPI — "AI in Software Project Planning" (Juin 2024)</a>
+            <a class="veille-lien" href="https://www.reuters.com/business/ai-slows-down-some-experienced-software-developers-study-finds-2025-07-10/" target="_blank" rel="noopener">Reuters — "AI slows down experienced developers" (Juil. 2025)</a>
+            <a class="veille-lien" href="https://arxiv.org/abs/2405.06371" target="_blank" rel="noopener">arXiv — "AI Assistants: Security Practices" (Mai 2024)</a>
+            <a class="veille-lien" href="https://www.itpro.com/software/development/software-developers-not-checking-ai-generated-code-verification-debt" target="_blank" rel="noopener">ITPro — "Verification debt in AI-generated code" (Juin 2025)</a>
+            <a class="veille-lien" href="https://www.atlassian.com/teams/software-development/state-of-developer-experience-2025" target="_blank" rel="noopener">Atlassian — Developer Experience Report (Juil. 2025)</a>
+            <a class="veille-lien" href="https://www.businessinsider.com/ai-fatigue-burnout-software-engineer-essay-siddhant-khare-2026-2" target="_blank" rel="noopener">Business Insider — "AI fatigue burnout" (Fév. 2026)</a>
+            <a class="veille-lien" href="https://hacom-tech.com" target="_blank" rel="noopener">hacom-tech.com — analyse IA & développement</a>
+            <a class="veille-lien" href="https://www.enseignementsup-recherche.gouv.fr/fr/intelligence-artificielle-de-quoi-parle-t-91190" target="_blank" rel="noopener">enseignementsup-recherche.gouv.fr — Définition IA</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ÉTUDES ET REMARQUES -->
+<section id="studies">
+  <div class="section-wrap">
+    <div class="section-header">
+      <span class="section-num">03 //</span>
+      <h2 class="section-title">Études & remarques</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="definition-block" style="margin-bottom:2rem;">
+      <h3>📊 Analyse approfondie — Avantage ou inconvénient ?</h3>
+      <p>
+        L'intégration de l'intelligence artificielle dans le développement logiciel est aujourd'hui l'un des sujets les plus débattus dans l'industrie informatique. Certains outils IA promettent une révolution en accélérant les tâches répétitives et en améliorant la productivité, tandis que d'autres professionnels alertent sur des risques potentiels tels que des vulnérabilités de sécurité ou une dépendance excessive.
+      </p>
+      <p>
+        Cette analyse s'appuie sur des études, articles techniques et rapports récents pour offrir un aperçu équilibré et fondé sur des données réelles.
+      </p>
+    </div>
+
+    <table class="etude-table">
+      <thead>
+        <tr>
+          <th>Étude / Source</th>
+          <th>Constat principal</th>
+          <th>Impact pour les devs SLAM</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <span class="etude-num">ELYSIATE · 2025</span><br/>
+            <a href="https://www.elysiate.com/blog/ai-in-software-development-survey-2025" target="_blank" rel="noopener">AI in Software Development Survey</a>
+          </td>
+          <td><strong>87% adoption, +35% productivité</strong>, réduction des bugs mesurée</td>
+          <td>Maîtriser les outils IA devient indispensable dès la formation</td>
+        </tr>
+        <tr>
+          <td>
+            <span class="etude-num">MDPI · JUIN 2024</span><br/>
+            <a href="https://www.mdpi.com/2673-6470/4/3/28" target="_blank" rel="noopener">AI in Software Project Planning</a>
+          </td>
+          <td>Meilleure estimation des délais, mais <strong>difficultés d'intégration dans l'Agile</strong></td>
+          <td>L'IA ne remplace pas la rigueur des méthodes projet apprises en BTS</td>
+        </tr>
+        <tr>
+          <td>
+            <span class="etude-num">ATLASSIAN · JUIL. 2025</span><br/>
+            <a href="https://www.atlassian.com/teams/software-development/state-of-developer-experience-2025" target="_blank" rel="noopener">Developer Experience Report</a>
+          </td>
+          <td><strong>+10h/semaine gagnées</strong> mais gains annulés par les problèmes organisationnels</td>
+          <td>L'IA seule ne suffit pas : l'organisation de l'équipe reste déterminante</td>
+        </tr>
+        <tr>
+          <td>
+            <span class="etude-num">REUTERS · JUIL. 2025</span><br/>
+            <a href="https://www.reuters.com/business/ai-slows-down-some-experienced-software-developers-study-finds-2025-07-10/" target="_blank" rel="noopener">AI slows down experienced developers</a>
+          </td>
+          <td>Devs expérimentés <strong>19% plus lents</strong> sur code maîtrisé avec IA</td>
+          <td>Connaître ses limites et savoir quand ne pas utiliser l'IA</td>
+        </tr>
+        <tr>
+          <td>
+            <span class="etude-num">ARXIV · MAI 2024</span><br/>
+            <a href="https://arxiv.org/abs/2405.06371" target="_blank" rel="noopener">AI Assistants — Security Practices</a>
+          </td>
+          <td><strong>45% du code IA</strong> peut contenir des failles de sécurité communes</td>
+          <td>La revue de code et la sécurité applicative restent des compétences humaines essentielles</td>
+        </tr>
+        <tr>
+          <td>
+            <span class="etude-num">ITPRO · JUIN 2025</span><br/>
+            <a href="https://www.itpro.com/software/development/software-developers-not-checking-ai-generated-code-verification-debt" target="_blank" rel="noopener">Verification debt in AI-generated code</a>
+          </td>
+          <td>Accumulation de <strong>"dette de vérification"</strong> sans revue systématique</td>
+          <td>Intégrer la revue de code IA dans les pratiques dès le début de carrière</td>
+        </tr>
+        <tr>
+          <td>
+            <span class="etude-num">BUSINESS INSIDER · FÉV. 2026</span><br/>
+            <a href="https://www.businessinsider.com/ai-fatigue-burnout-software-engineer-essay-siddhant-khare-2026-2" target="_blank" rel="noopener">AI fatigue burnout — essay</a>
+          </td>
+          <td><strong>Fatigue cognitive accrue</strong> : supervision constante des suggestions IA</td>
+          <td>Développer une hygiène numérique et des limites saines avec les outils IA</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- PARTIE E5 -->
+<section id="e5">
+  <div class="section-wrap">
+    <div class="section-header">
+      <span class="section-num">04 //</span>
+      <h2 class="section-title">Partie E5 — Entreprise ADESTAVE</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <!-- PRÉSENTATION ENTREPRISE -->
+    <div class="e5-intro">
+      <h3>🏢 Présentation de l'entreprise</h3>
+      <p>
+        La société <strong>ADESTAVE</strong> a été créée le <strong>15 décembre 2018</strong> (il y a environ 7 ans). Sa forme juridique est <strong>SAS (Société par Actions Simplifiée)</strong>. En 2023, elle était catégorisée Petite ou Moyenne Entreprise avec 6 à 9 salariés ; elle en compte aujourd'hui <strong>8</strong>.
+      </p>
+      <p>
+        Son domaine d'activité principal est le <strong>transport routier de fret de proximité</strong> : transport local de marchandises par camion avec des trajets courts et des livraisons fréquentes, souvent dans une même région.
+      </p>
+    </div>
+
+    <div class="e5-grid">
+      <div class="e5-bloc">
+        <div class="e5-bloc-title">📦 Secteurs d'activité</div>
+        <ul>
+          <li>Transport routier de fret de proximité</li>
+          <li>Transport de marchandises</li>
+          <li>Déménagement</li>
+          <li>Location de véhicules avec conducteur pour le transport de marchandises</li>
+          <li>Activité possible de commissionnaire de transport</li>
+        </ul>
+      </div>
+      <div class="e5-bloc">
+        <div class="e5-bloc-title">⚙️ Normes suivies</div>
+        <ul>
+          <li><strong>ITIL</strong> — pour les services : utilisation d'un logiciel ITSM (IT Service Management)</li>
+          <li><strong>ISO 27001</strong> — pour la sécurité : utilisation d'un antivirus (Sophos Intercept X)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 1. GESTION DES INCIDENTS -->
+    <div class="e5-full">
+      <div class="e5-full-title">1 — Gestion des incidents</div>
+
+      <div class="e5-q">Comment l'entreprise gère-t-elle les incidents ?</div>
+      <p>Voici la procédure de gestion des incidents chez ADESTAVE :</p>
+
+      <table class="e5-table">
+        <thead>
+          <tr>
+            <th>Aspect</th>
+            <th>Méthode</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Détection</strong></td>
+            <td>Les incidents sont souvent signalés directement par les utilisateurs (email, téléphone, messagerie) plutôt que détectés par des outils de monitoring automatisés.</td>
+          </tr>
+          <tr>
+            <td><strong>Enregistrement</strong></td>
+            <td>Utilisation d'un logiciel ITSM léger — Jira Service Management.</td>
+          </tr>
+          <tr>
+            <td><strong>Priorisation</strong></td>
+            <td>Le problème le plus visible ou qui touche plusieurs utilisateurs est traité en premier. Peu de SLA stricts définis.</td>
+          </tr>
+          <tr>
+            <td><strong>Diagnostic</strong></td>
+            <td>Effectué par le technicien IT de manière réactive ; peu d'analyses approfondies sauf si le problème se répète.</td>
+          </tr>
+          <tr>
+            <td><strong>Résolution</strong></td>
+            <td>Généralement manuelle et rapide : redémarrage, réinstallation ou contournement temporaire.</td>
+          </tr>
+          <tr>
+            <td><strong>Clôture</strong></td>
+            <td>Documentation minimale : le ticket est archivé, mais peu d'analyse post-incident.</td>
+          </tr>
+          <tr>
+            <td><strong>Suivi / Amélioration</strong></td>
+            <td>Pas toujours de processus de gestion des problèmes : les causes profondes sont souvent traitées au cas par cas.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p style="margin-top:1rem;">L'entreprise met également en place des <strong>procédures internes</strong> :</p>
+      <ul>
+        <li>Procédure sécurité (sécurité des postes et du réseau)</li>
+        <li>Procédures IT</li>
+        <li>Procédure RH et administration</li>
+        <li>Procédure qualité et relation client</li>
+        <li>Procédure financière et légale</li>
+      </ul>
+
+      <div class="e5-q">Quel logiciel est utilisé pour gérer les incidents ?</div>
+      <p>Le logiciel utilisé est <strong>Jira Service Management</strong>. Au niveau du matériel, l'entreprise dispose d'ordinateurs, de routeurs réseau, de serveurs et d'applications dédiées.</p>
+
+      <div class="e5-q">Avez-vous participé à une migration ? Quel était le besoin ?</div>
+      <p>Lors de mon stage, je n'ai ni participé ni observé de migration. Durant ma formation, j'ai pu réaliser plusieurs migrations dont le besoin était de changer de technologie tout en conservant les données : sauvegarde des données existantes, préparation de la nouvelle technologie, puis réalisation de la migration.</p>
+
+      <div class="e5-q">Comment l'entreprise prend-elle en compte la réglementation numérique (CNIL, RGPD) ?</div>
+      <p>ADESTAVE applique les principes du RGPD et veille à protéger les données personnelles conformément aux recommandations de la CNIL. Elle limite la collecte des données au strict nécessaire. Par exemple, lors d'une programmation de livraison, seules les informations essentielles sont demandées : nom, prénom, nom de l'entreprise (si professionnel), adresse email, numéro de téléphone, adresse de livraison, informations sur la marchandise, informations de suivi et de facturation.</p>
+      <p>L'entreprise met en place des mesures de sécurité informatique : accès aux bases de données sécurisés par mots de passe complexes, antivirus sur les postes, sauvegardes régulières des données importantes.</p>
+
+      <div class="e5-q">Comment se fait le partage des informations au sein de l'équipe ?</div>
+      <p>Le partage des informations se fait par <strong>messagerie électronique</strong>, utilisée uniquement à des fins professionnelles. Seuls les comptes professionnels sont autorisés.</p>
+    </div>
+
+    <!-- 2. GESTION DES CONFIGURATIONS -->
+    <div class="e5-full">
+      <div class="e5-full-title">2 — Gestion des configurations</div>
+
+      <div class="e5-q">Quel outil pour répertorier et gérer les matériels et licences ?</div>
+      <p>Chez ADESTAVE, les outils utilisés comprennent :</p>
+      <ul>
+        <li><strong>AscendTMS</strong> — logiciel de gestion des transports (organisation des expéditions, optimisation des itinéraires, automatisation de la facturation)</li>
+        <li><strong>Microsoft 365</strong></li>
+        <li><strong>Microsoft Intune</strong></li>
+        <li>Ordinateurs, imprimantes, équipements réseau (switch, routeur)</li>
+      </ul>
+
+      <div class="e5-q">Quels outils pour déployer de nouveaux postes de travail ?</div>
+      <p>ADESTAVE est une PME basée dans le transport de fret. L'entreprise ne dispose que de 2 postes informatiques servant à la gestion et à la communication — ce qui est suffisant pour ses besoins. Aucune mise en œuvre spécifique n'est déployée pour de nouveaux postes.</p>
+
+      <div class="e5-q">Comment l'entreprise collecte-t-elle ses informations ?</div>
+      <p>Les informations sont collectées via téléphone, email ou formulaires en ligne pour organiser les livraisons. Les données sur le parc informatique et les équipements sont suivies via des outils internes. Pendant les livraisons, des données en temps réel (localisation des véhicules, état des livraisons, preuves de réception) sont collectées via applications mobiles ou terminaux embarqués. Toutes ces données sont traitées dans le respect du RGPD.</p>
+
+      <div class="e5-q">Comment l'entreprise surveille-t-elle le bon fonctionnement des matériels, du réseau, des applications ?</div>
+      <p>ADESTAVE combine plusieurs outils :</p>
+      <ul>
+        <li><strong>GLPI</strong> — gestion du parc informatique, des licences et des incidents</li>
+        <li><strong>OCS Inventory NG</strong> — inventaire automatisé du matériel et des logiciels, détection des changements, alertes en cas de problème</li>
+        <li><strong>Outils de supervision</strong> (Zabbix, Nagios ou Centreon) — suivi en temps réel des serveurs, applications et équipements réseau, avec création automatique de tickets dans GLPI en cas d'anomalie</li>
+      </ul>
+
+      <div class="e5-q">Des documentations techniques sont-elles rédigées et conservées ? Sous quelle forme ?</div>
+      <p>Les documents techniques sont conservés en format électronique, sauvegardés sur un serveur cloud et également sur clé USB.</p>
+
+      <div class="e5-q">Avez-vous rédigé une documentation sur une mise en place de configuration ?</div>
+      <p>Durant ma formation, oui à de nombreuses reprises. Durant mon second stage en entreprise, non.</p>
+
+      <div class="e5-q">Quelle est la "trace" de votre travail dans l'entreprise ?</div>
+      <p>Durant ce stage, j'ai laissé des <strong>traces techniques</strong> comme : l'installation et la configuration de postes informatiques, des mises à jour de logiciels ou systèmes, des interventions sur le matériel, et la mise en place d'outils ou solutions (antivirus, sauvegarde).</p>
+    </div>
+
+    <!-- 3. GESTION DES COMPÉTENCES -->
+    <div class="e5-full">
+      <div class="e5-full-title">3 — Gestion des compétences</div>
+
+      <div class="e5-q">L'entreprise vous a-t-elle proposé de suivre une formation particulière ?</div>
+      <p>Non, l'entreprise ne m'a pas proposé de formation. En revanche, elle m'a proposé un poste après l'obtention du BTS.</p>
+
+      <div class="e5-q">Avez-vous dû vous auto-former pour réaliser une mission durant votre stage ?</div>
+      <p>Oui, à certains moments j'ai dû m'auto-former, malgré la présence et l'aide de mon tuteur, notamment pour accomplir certaines missions techniques spécifiques au contexte de l'entreprise.</p>
+
+      <div class="e5-q">Avez-vous étudié une nouvelle technologie durant votre stage ?</div>
+      <p>Oui, j'ai pu étudier de nouvelles technologies comme <strong>AscendTMS</strong> (logiciel de gestion du transport) et <strong>Jira Service Management</strong>.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-wrap">
+    <div class="section-header">
+      <span class="section-num">05 //</span>
+      <h2 class="section-title">Contact & CV</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="contact-grid">
+      <div>
+        <div class="contact-text">
+          <h3>Anglio <span>Kelian</span></h3>
+          <p>Étudiant BTS SIO SLAM — Lycée Nelson Mandela, Saint-Benoît. N'hésitez pas à me contacter.</p>
+        </div>
+        <div class="contact-links">
+          <div class="contact-link" style="cursor:default;">
+            <span class="contact-link-icon">🏫</span>
+            <div class="contact-link-info">
+              <span class="contact-link-label">Établissement</span>
+              <span class="contact-link-value">Lycée Nelson Mandela — Saint-Benoît</span>
+            </div>
+          </div>
+          <div class="contact-link" style="cursor:default;">
+            <span class="contact-link-icon">💻</span>
+            <div class="contact-link-info">
+              <span class="contact-link-label">Option</span>
+              <span class="contact-link-value">BTS SIO SLAM — 2ème année</span>
+            </div>
+          </div>
+          <div class="contact-link" style="cursor:default;">
+            <span class="contact-link-icon">📍</span>
+            <div class="contact-link-info">
+              <span class="contact-link-label">Localisation</span>
+              <span class="contact-link-value">Saint-Benoît · La Réunion</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cv-download">
+        <span class="cv-preview">📄</span>
+        <p>// Curriculum vitæ disponible sur demande</p>
+        <a href="#" class="btn" onclick="alert('CV à intégrer'); return false;">Télécharger mon CV</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>AK</span>://portfolio · Anglio Kelian · BTS SIO SLAM · Lycée Nelson Mandela · <span>2024–2026</span>
+</footer>
+
+<script>
+// MATRIX CANVAS
+(function() {
+  const canvas = document.getElementById('matrix-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const cols = Math.floor(canvas.width / 20);
+  const drops = Array(cols).fill(1);
+  const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノ';
+  function draw() {
+    ctx.fillStyle = 'rgba(5,10,7,0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#00ff88';
+    ctx.font = '15px Share Tech Mono';
+    drops.forEach((y, i) => {
+      const char = chars[Math.floor(Math.random() * chars.length)];
+      ctx.fillText(char, i * 20, y * 20);
+      if (y * 20 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+      drops[i]++;
+    });
+  }
+  setInterval(draw, 35);
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+})();
+
+// TYPED TEXT
+(function() {
+  const texts = [
+    'Étudiant BTS SIO SLAM',
+    'Développeur en formation',
+    'Veille IA · Développement',
+    'Solutions Logicielles & Apps',
+  ];
+  let ti = 0, ci = 0, del = false;
+  const el = document.getElementById('typed-text');
+  function type() {
+    const t = texts[ti];
+    if (!del) {
+      el.textContent = t.slice(0, ++ci);
+      if (ci === t.length) { del = true; setTimeout(type, 1800); return; }
+    } else {
+      el.textContent = t.slice(0, --ci);
+      if (ci === 0) { del = false; ti = (ti + 1) % texts.length; }
+    }
+    setTimeout(type, del ? 60 : 100);
+  }
+  type();
+})();
+
+// TIMELINE REVEAL
+(function() {
+  const s = document.createElement('style');
+  s.textContent = `.actu-card { opacity:0; transform:translateY(20px); transition:opacity 0.6s ease, transform 0.6s ease; } .actu-card.visible { opacity:1; transform:translateY(0); }`;
+  document.head.appendChild(s);
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), 100);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.actu-card').forEach(el => obs.observe(el));
+})();
+
+// ACTIVE NAV
+(function() {
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  const s = document.createElement('style');
+  s.textContent = `.nav-links a.active { color: var(--green) !important; }`;
+  document.head.appendChild(s);
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => {
+          link.classList.remove('active');
+          if ('#' + entry.target.id === link.getAttribute('href')) link.classList.add('active');
+        });
+      }
+    });
+  }, { threshold: 0.4 });
+  sections.forEach(s => obs.observe(s));
+})();
+</script>
+</body>
+</html>
